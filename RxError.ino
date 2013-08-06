@@ -7,7 +7,7 @@ http://www.guiott.com/Rino/CommandDescr/Protocol.htm
 */
 
 String RxErrorText = "";
-char RxErrorExpected = ' ';
+char  RxErrorExpected = ' ';
 char RxErrorFound = ' ';
 
 /*-----------------------------------------------------------------------------*/

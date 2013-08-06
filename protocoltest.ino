@@ -20,17 +20,17 @@ the scheduled actions according to the commnad code.
 
 #define DEBUG_MODE // If defined outputs some data on serial for debug
 
-char TmpBuff[25];           // temp buffer to compose TX buffer 
-
 long Bps = 57600;           // serial port speed
 const int MAX_BUFF = 256;   // buffer size
 int RxPtrIn = 0;            // circular queue pointer read
 int RxPtrOut = 0;           // outgoing bytes read by Rx function
 int RxStatus = 0;           // index for command decoding FSM status
-char RxBuff[255];           // circular buffer
+char RxBuff[MAX_BUFF];      // circular buffer
+char TxBuff[MAX_BUFF];
+
 int RX_HEADER_LEN = 3;	    // command string header length (byte)
 
-long Timeout=50;            // timeout in ms
+unsigned long Timeout=50;   // timeout in ms
 long StartTime;             // the moment the packet starts receiving
 
 /*==============================================================================*/
