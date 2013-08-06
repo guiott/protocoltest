@@ -21,7 +21,7 @@ struct _Buff_b
 union __Buff_b
 {
     struct _Buff_b I;// to use as integers or chars, little endian LSB first
-    byte C[25];  // to use as bytes to send on char buffer
+    byte C[26];  // to use as bytes to send on char buffer
 }Buff_b;
 
 void b_dsNavParam(void)
@@ -39,32 +39,32 @@ void b_dsNavParam(void)
     */
     int Indx = RX_HEADER_LEN;  // Head length, number of characters in buffer before valid data
     
-    TmpBuff[++Indx]=Buff_b.C[3]; // PosXmes MSB
-    TmpBuff[++Indx]=Buff_b.C[2];
-    TmpBuff[++Indx]=Buff_b.C[1];
-    TmpBuff[++Indx]=Buff_b.C[0];
-    TmpBuff[++Indx]=Buff_b.C[7]; // PosYmes MSB
-    TmpBuff[++Indx]=Buff_b.C[6];
-    TmpBuff[++Indx]=Buff_b.C[5];
-    TmpBuff[++Indx]=Buff_b.C[4];
-    TmpBuff[++Indx]=Buff_b.C[9]; // VelInt[0]   MSB
-    TmpBuff[++Indx]=Buff_b.C[8];
-    TmpBuff[++Indx]=Buff_b.C[11];// VelInt[1]   MSB
-    TmpBuff[++Indx]=Buff_b.C[10];
-    TmpBuff[++Indx]=Buff_b.C[13];// VelInt[2]   MSB
-    TmpBuff[++Indx]=Buff_b.C[12];
-    TmpBuff[++Indx]=Buff_b.C[15];// VelInt[3]   MSB
-    TmpBuff[++Indx]=Buff_b.C[14];
-    TmpBuff[++Indx]=Buff_b.C[17];// ADCValue[0] MSB
-    TmpBuff[++Indx]=Buff_b.C[16];
-    TmpBuff[++Indx]=Buff_b.C[19];// ADCValue[1] MSB
-    TmpBuff[++Indx]=Buff_b.C[18];
-    TmpBuff[++Indx]=Buff_b.C[21];// ADCValue[2] MSB
-    TmpBuff[++Indx]=Buff_b.C[20];
-    TmpBuff[++Indx]=Buff_b.C[23];// ADCValue[3] MSB
-    TmpBuff[++Indx]=Buff_b.C[22];
-    TmpBuff[++Indx]=Buff_b.C[24];// stasis_err number
-    TmpBuff[++Indx]=Buff_b.C[25];// stasis_alarm
+    TxBuff[++Indx]=Buff_b.C[3]; // PosXmes MSB
+    TxBuff[++Indx]=Buff_b.C[2];
+    TxBuff[++Indx]=Buff_b.C[1];
+    TxBuff[++Indx]=Buff_b.C[0];
+    TxBuff[++Indx]=Buff_b.C[7]; // PosYmes MSB
+    TxBuff[++Indx]=Buff_b.C[6];
+    TxBuff[++Indx]=Buff_b.C[5];
+    TxBuff[++Indx]=Buff_b.C[4];
+    TxBuff[++Indx]=Buff_b.C[9]; // VelInt[0]   MSB
+    TxBuff[++Indx]=Buff_b.C[8];
+    TxBuff[++Indx]=Buff_b.C[11];// VelInt[1]   MSB
+    TxBuff[++Indx]=Buff_b.C[10];
+    TxBuff[++Indx]=Buff_b.C[13];// VelInt[2]   MSB
+    TxBuff[++Indx]=Buff_b.C[12];
+    TxBuff[++Indx]=Buff_b.C[15];// VelInt[3]   MSB
+    TxBuff[++Indx]=Buff_b.C[14];
+    TxBuff[++Indx]=Buff_b.C[17];// ADCValue[0] MSB
+    TxBuff[++Indx]=Buff_b.C[16];
+    TxBuff[++Indx]=Buff_b.C[19];// ADCValue[1] MSB
+    TxBuff[++Indx]=Buff_b.C[18];
+    TxBuff[++Indx]=Buff_b.C[21];// ADCValue[2] MSB
+    TxBuff[++Indx]=Buff_b.C[20];
+    TxBuff[++Indx]=Buff_b.C[23];// ADCValue[3] MSB
+    TxBuff[++Indx]=Buff_b.C[22];
+    TxBuff[++Indx]=Buff_b.C[24];// stasis_err number
+    TxBuff[++Indx]=Buff_b.C[25];// stasis_alarm
     
     TxData('b', Indx+1);
 }
@@ -111,14 +111,14 @@ void T_GpsTime(void)
     Buff_T.I.UtcSecond = second();
     //simulation
     
-    TmpBuff[++Indx]= Buff_T.C[1]; // Year MSB
-    TmpBuff[++Indx]= Buff_T.C[0]; // Year LSB
-    TmpBuff[++Indx]= Buff_T.C[2]; // Month
-    TmpBuff[++Indx]= Buff_T.C[3]; // Day
-    TmpBuff[++Indx]= Buff_T.C[4]; // Hours
-    TmpBuff[++Indx]= Buff_T.C[5]; // Minutes
-    TmpBuff[++Indx]= Buff_T.C[7]; // Seconds MSB
-    TmpBuff[++Indx]= Buff_T.C[6]; // Seconds
+    TxBuff[++Indx]= Buff_T.C[1]; // Year MSB
+    TxBuff[++Indx]= Buff_T.C[0]; // Year LSB
+    TxBuff[++Indx]= Buff_T.C[2]; // Month
+    TxBuff[++Indx]= Buff_T.C[3]; // Day
+    TxBuff[++Indx]= Buff_T.C[4]; // Hours
+    TxBuff[++Indx]= Buff_T.C[5]; // Minutes
+    TxBuff[++Indx]= Buff_T.C[7]; // Seconds MSB
+    TxBuff[++Indx]= Buff_T.C[6]; // Seconds
     
     TxData('T', Indx+1);
 }
@@ -166,22 +166,22 @@ void G_GpsService(void)
      Buff_G.I.HEPE=0X89ABCDEF;
     // simulation. 
       
-    TmpBuff[++Indx]=Buff_G.C[1];     // week number MSB first
-    TmpBuff[++Indx]=Buff_G.C[0];
-    TmpBuff[++Indx]=Buff_G.C[5];     // tow MSB first
-    TmpBuff[++Indx]=Buff_G.C[4];
-    TmpBuff[++Indx]=Buff_G.C[3];
-    TmpBuff[++Indx]=Buff_G.C[2];
-    TmpBuff[++Indx]=Buff_G.C[6];     // hdop
-    TmpBuff[++Indx]=Buff_G.C[7];     // svs
-    TmpBuff[++Indx]=Buff_G.C[11];    // SatIdList MSB first
-    TmpBuff[++Indx]=Buff_G.C[10];  
-    TmpBuff[++Indx]=Buff_G.C[9];
-    TmpBuff[++Indx]=Buff_G.C[8];
-    TmpBuff[++Indx]=Buff_G.C[15];    // HEPE MSB first
-    TmpBuff[++Indx]=Buff_G.C[14];
-    TmpBuff[++Indx]=Buff_G.C[13];
-    TmpBuff[++Indx]=Buff_G.C[12];
+    TxBuff[++Indx]=Buff_G.C[1];     // week number MSB first
+    TxBuff[++Indx]=Buff_G.C[0];
+    TxBuff[++Indx]=Buff_G.C[5];     // tow MSB first
+    TxBuff[++Indx]=Buff_G.C[4];
+    TxBuff[++Indx]=Buff_G.C[3];
+    TxBuff[++Indx]=Buff_G.C[2];
+    TxBuff[++Indx]=Buff_G.C[6];     // hdop
+    TxBuff[++Indx]=Buff_G.C[7];     // svs
+    TxBuff[++Indx]=Buff_G.C[11];    // SatIdList MSB first
+    TxBuff[++Indx]=Buff_G.C[10];  
+    TxBuff[++Indx]=Buff_G.C[9];
+    TxBuff[++Indx]=Buff_G.C[8];
+    TxBuff[++Indx]=Buff_G.C[15];    // HEPE MSB first
+    TxBuff[++Indx]=Buff_G.C[14];
+    TxBuff[++Indx]=Buff_G.C[13];
+    TxBuff[++Indx]=Buff_G.C[12];
  
      TxData('G', Indx+1);
 }
@@ -258,43 +258,43 @@ void K_GpsPos(void)
    */   
     // simulation.
      
-    TmpBuff[++Indx]=Buff_K.C[3];      // lat_gps MSB first
-    TmpBuff[++Indx]=Buff_K.C[2];
-    TmpBuff[++Indx]=Buff_K.C[1];
-    TmpBuff[++Indx]=Buff_K.C[0];
-    TmpBuff[++Indx]=Buff_K.C[7];      // lon_gps MSB first
-    TmpBuff[++Indx]=Buff_K.C[6];
-    TmpBuff[++Indx]=Buff_K.C[5];
-    TmpBuff[++Indx]=Buff_K.C[4];
-    TmpBuff[++Indx]=Buff_K.C[11];     // alt_sl_gps MSB first
-    TmpBuff[++Indx]=Buff_K.C[10];
-    TmpBuff[++Indx]=Buff_K.C[9];
-    TmpBuff[++Indx]=Buff_K.C[8];
-    TmpBuff[++Indx]=Buff_K.C[13];     // sog_gpss MSB first
-    TmpBuff[++Indx]=Buff_K.C[12];
-    TmpBuff[++Indx]=Buff_K.C[15];     // cog_gpss MSB first
-    TmpBuff[++Indx]=Buff_K.C[14];
-    TmpBuff[++Indx]=Buff_K.C[17];     // rmat[0] MSB first
-    TmpBuff[++Indx]=Buff_K.C[16];
-    TmpBuff[++Indx]=Buff_K.C[19];     // rmat[1] MSB first
-    TmpBuff[++Indx]=Buff_K.C[18];
-    TmpBuff[++Indx]=Buff_K.C[21];     // rmat[2] MSB first
-    TmpBuff[++Indx]=Buff_K.C[20];
-    TmpBuff[++Indx]=Buff_K.C[23];     // rmat[3] MSB first
-    TmpBuff[++Indx]=Buff_K.C[22];
-    TmpBuff[++Indx]=Buff_K.C[25];     // rmat[4] MSB first
-    TmpBuff[++Indx]=Buff_K.C[24];
-    TmpBuff[++Indx]=Buff_K.C[27];     // rmat[5] MSB first
-    TmpBuff[++Indx]=Buff_K.C[26];
-    TmpBuff[++Indx]=Buff_K.C[29];     // rmat[6] MSB first
-    TmpBuff[++Indx]=Buff_K.C[28];
-    TmpBuff[++Indx]=Buff_K.C[31];     // rmat[7] MSB first
-    TmpBuff[++Indx]=Buff_K.C[30];
-    TmpBuff[++Indx]=Buff_K.C[33];     // rmat[8] MSB first
-    TmpBuff[++Indx]=Buff_K.C[32];
-    TmpBuff[++Indx]=Buff_K.C[34];     // udb_cpu_load()
-    TmpBuff[++Indx]=Buff_K.C[36];     // YawOffset MSB first
-    TmpBuff[++Indx]=Buff_K.C[35];     
+    TxBuff[++Indx]=Buff_K.C[3];      // lat_gps MSB first
+    TxBuff[++Indx]=Buff_K.C[2];
+    TxBuff[++Indx]=Buff_K.C[1];
+    TxBuff[++Indx]=Buff_K.C[0];
+    TxBuff[++Indx]=Buff_K.C[7];      // lon_gps MSB first
+    TxBuff[++Indx]=Buff_K.C[6];
+    TxBuff[++Indx]=Buff_K.C[5];
+    TxBuff[++Indx]=Buff_K.C[4];
+    TxBuff[++Indx]=Buff_K.C[11];     // alt_sl_gps MSB first
+    TxBuff[++Indx]=Buff_K.C[10];
+    TxBuff[++Indx]=Buff_K.C[9];
+    TxBuff[++Indx]=Buff_K.C[8];
+    TxBuff[++Indx]=Buff_K.C[13];     // sog_gpss MSB first
+    TxBuff[++Indx]=Buff_K.C[12];
+    TxBuff[++Indx]=Buff_K.C[15];     // cog_gpss MSB first
+    TxBuff[++Indx]=Buff_K.C[14];
+    TxBuff[++Indx]=Buff_K.C[17];     // rmat[0] MSB first
+    TxBuff[++Indx]=Buff_K.C[16];
+    TxBuff[++Indx]=Buff_K.C[19];     // rmat[1] MSB first
+    TxBuff[++Indx]=Buff_K.C[18];
+    TxBuff[++Indx]=Buff_K.C[21];     // rmat[2] MSB first
+    TxBuff[++Indx]=Buff_K.C[20];
+    TxBuff[++Indx]=Buff_K.C[23];     // rmat[3] MSB first
+    TxBuff[++Indx]=Buff_K.C[22];
+    TxBuff[++Indx]=Buff_K.C[25];     // rmat[4] MSB first
+    TxBuff[++Indx]=Buff_K.C[24];
+    TxBuff[++Indx]=Buff_K.C[27];     // rmat[5] MSB first
+    TxBuff[++Indx]=Buff_K.C[26];
+    TxBuff[++Indx]=Buff_K.C[29];     // rmat[6] MSB first
+    TxBuff[++Indx]=Buff_K.C[28];
+    TxBuff[++Indx]=Buff_K.C[31];     // rmat[7] MSB first
+    TxBuff[++Indx]=Buff_K.C[30];
+    TxBuff[++Indx]=Buff_K.C[33];     // rmat[8] MSB first
+    TxBuff[++Indx]=Buff_K.C[32];
+    TxBuff[++Indx]=Buff_K.C[34];     // udb_cpu_load()
+    TxBuff[++Indx]=Buff_K.C[36];     // YawOffset MSB first
+    TxBuff[++Indx]=Buff_K.C[35];     
  
     TxData('K', Indx+1);
 }
@@ -362,10 +362,10 @@ void L_LLS(void)
      Buff_L.I.Temp[1] = 25;
      // simulation
       
-     TmpBuff[++Indx]=Buff_L.C[0];     // Battery level
-     TmpBuff[++Indx]=Buff_L.C[1];
-     TmpBuff[++Indx]=Buff_L.C[2];     // temperature
-     TmpBuff[++Indx]=Buff_L.C[3];
+     TxBuff[++Indx]=Buff_L.C[0];     // Battery level
+     TxBuff[++Indx]=Buff_L.C[1];
+     TxBuff[++Indx]=Buff_L.C[2];     // temperature
+     TxBuff[++Indx]=Buff_L.C[3];
  
      TxData('L', Indx+1);
 }

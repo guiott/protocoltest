@@ -43,9 +43,9 @@ void Parser(void)
             // Send string 'Test'
             for (int i = 0; i < 25; i++)
             {
-                TmpBuff[i] = Test[i];
+                TxBuff[i+RX_HEADER_LEN+1] = Test[i];
             }
-            TxData('z', 24);
+            TxData('z', 28);
             Serial.write("\n");
                  
             break;
