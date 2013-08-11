@@ -18,7 +18,7 @@ the scheduled actions according to the commnad code.
 
 #include <Time.h>
 
-#define DEBUG_MODE // If defined outputs some data on serial for debug
+//#define DEBUG_MODE // If defined outputs some data on serial for debug
 
 long Bps = 57600;           // serial port speed
 const int MAX_BUFF = 256;   // buffer size
@@ -33,6 +33,14 @@ int RX_HEADER_LEN = 3;	    // command string header length (byte)
 unsigned long Timeout=50;   // timeout in ms
 long StartTime;             // the moment the packet starts receiving
 
+int Joy[4];
+int JoyIndx=0;
+int Dummy; // Dummy buffer for analog reading
+
+int RxPtrStart = 0;         // message packet starting pointer in queue
+int RxPtrEnd = 0;           // message packet ending pointer in queue
+int RxPtrData = 0;          // pointer to first data in queue
+int RxCmdLen = 0;
 /*==============================================================================*/
 void setup() 
 {
@@ -41,7 +49,7 @@ void setup()
   // timeout in ms as a function of comm speed and buffer size
   Timeout = (int)((MAX_BUFF * 10000.0) / Bps); 
   
-  setTime(1,24,0,1,8,2013); // just for test debug
+  setTime(11,26,0,10,8,2013); // just for test debug
   
 #ifdef DEBUG_MODE
   Timeout=2000; // need to increase timeout because output requires more time
@@ -63,6 +71,8 @@ void loop()
           RxError(1);
         }
   }
+  
+  Joystick();
 }
 
 /*==============================================================================*/

@@ -13,6 +13,12 @@ char RxErrorFound = ' ';
 /*-----------------------------------------------------------------------------*/
 void RxError(int Err)
 {  
+  RxPtrOut=0;				// flush circular queue
+  RxPtrIn=0;
+  RxPtrEnd=0;
+  RxStatus=0; 
+  ChkSum=0;
+  
   switch (Err)
   {
     case 1: // Timeout

@@ -15,7 +15,6 @@ void TxData(char TxCmd, int TxCmdLen)
     TxBuff[1] = ID;           // often not used, useful if many device on bus
     TxBuff[2] = TxCmd;        // command
     TxBuff[3] = TxCmdLen - RX_HEADER_LEN;     // lenght of the payload plus CHKSUM
-    Serial.println("eccomi");
     for (int i=0; i<=TxCmdLen; i++)
     {// compute the checksum while sending
       TxChkSum += (byte)(TxBuff[i]);

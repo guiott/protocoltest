@@ -6,6 +6,8 @@ acts as a tester exchanging data with the protocol:
 http://www.guiott.com/Rino/CommandDescr/Protocol.htm
 */
 
+byte linBuff[MAX_BUFF]; // Linear buffer 
+
 /*-----------------------------------------------------------------------------*/
 // Buffer b_dsNavParam
 struct _Buff_b
@@ -38,7 +40,6 @@ void b_dsNavParam(void)
      29     stasis_alarm stasis_alarm
     */
     int Indx = RX_HEADER_LEN;  // Head length, number of characters in buffer before valid data
-    
     TxBuff[++Indx]=Buff_b.C[3]; // PosXmes MSB
     TxBuff[++Indx]=Buff_b.C[2];
     TxBuff[++Indx]=Buff_b.C[1];
@@ -160,10 +161,10 @@ void G_GpsService(void)
     // simulation. The requested value is looped back as a test
      Buff_G.I.week_no=0X1234;
      Buff_G.I.tow=0X56789ABC;
-     Buff_G.I.hdop=0X5;
-     Buff_G.I.svs=0X9;
-     Buff_G.I.SatIdList=0X01234567;
-     Buff_G.I.HEPE=0X89ABCDEF;
+     Buff_G.I.hdop=5;
+     Buff_G.I.svs=9;
+     Buff_G.I.SatIdList=61680;
+     Buff_G.I.HEPE=7967;
     // simulation. 
       
     TxBuff[++Indx]=Buff_G.C[1];     // week number MSB first
@@ -243,12 +244,12 @@ void K_GpsPos(void)
     int Indx = RX_HEADER_LEN;  // Head length, number of characters in buffer before valid data
 
     // simulation. The requested value is looped back as a test
-    Buff_K.I.lat=41858892;
-    Buff_K.I.lon=12569095;
-    Buff_K.I.alt=78;
-    Buff_K.I.cog=123;
-    Buff_K.I.sog=67;
-    Buff_K.I.YawOffset=299;
+    Buff_K.I.lat=418588920;
+    Buff_K.I.lon=125690950;
+    Buff_K.I.alt=7800;
+    Buff_K.I.cog=4700;
+    Buff_K.I.sog=12300;
+    Buff_K.I.YawOffset=29;
     // simulation
    /* 
       UDB4.yawAbs = joy.RX * 1.8; actually is computed from rmat
@@ -302,14 +303,13 @@ void K_GpsPos(void)
 
 /*-----------------------------------------------------------------------------*/
 void S_Set(void)
-{/* set speed & direction HLS -> IMU -> dsNav
-*/
-int VelDes; // mean desired speed mm/s
-int YawDes; // desired orientation angle (set point)(Degx10 0-3599)
+{/* set speed & direction HLS -> IMU -> dsNav*/
+   int VelDes; // mean desired speed mm/s
+   int YawDes; // desired orientation angle (set point)(Degx10 0-3599)
+   linearize();
+   VelDes = (linBuff[0] << 8) + (linBuff[1]);
+   YawDes = (linBuff[2] << 8) + (linBuff[3]);
 
-   VelDes = (RxBuff[RX_HEADER_LEN] << 8) + (RxBuff[RX_HEADER_LEN +1]);
-   YawDes = (RxBuff[RX_HEADER_LEN+2] << 8) + (RxBuff[RX_HEADER_LEN +3]);
-   
    // simulation. The requested value is looped back as a test
    Buff_b.I.VelInt[0] = VelDes;
    Buff_b.I.VelInt[1] = VelDes;
@@ -319,10 +319,10 @@ int YawDes; // desired orientation angle (set point)(Degx10 0-3599)
    Buff_b.I.ADCValue[1] = VelDes * 10;
    Buff_b.I.ADCValue[2] = VelDes * 10;
    Buff_b.I.ADCValue[3] = VelDes * 10;
-   Buff_b.I.PosXmes = 500;
-   Buff_b.I.PosYmes = 400;
-   Buff_b.I.stasis_err = 0;
-   Buff_b.I.stasis_alarm = 0;
+   Buff_b.I.PosXmes = 123.456789;
+   Buff_b.I.PosYmes = 987.654321;
+   Buff_b.I.stasis_err = 8;
+   Buff_b.I.stasis_alarm = 9;
    // simulation.
 }
 
@@ -355,11 +355,11 @@ void L_LLS(void)
      
     int Indx = RX_HEADER_LEN;  // Head length, number of characters in buffer before valid data
 
-     // simulation. The requested value is looped back as a test
-     Buff_L.I.BatV[0] = 50;
-     Buff_L.I.BatV[1] = 75;
-     Buff_L.I.Temp[0] = 35;
-     Buff_L.I.Temp[1] = 25;
+     // simulation. The requested value variation is simulated with joysticks as a test
+     Buff_L.I.BatV[0] = Joy[0]/10.24;
+     Buff_L.I.BatV[1] = Joy[1]/10.24;
+     Buff_L.I.Temp[0] = Joy[2]/10.24;
+     Buff_L.I.Temp[1] = Joy[3]/10.24;
      // simulation
       
      TxBuff[++Indx]=Buff_L.C[0];     // Battery level
@@ -370,4 +370,15 @@ void L_LLS(void)
      TxData('L', Indx+1);
 }
 
+
+/*-----------------------------------------------------------------------------*/
+void linearize(void)
+{// bring the circular queue payload data in a linear buffer for a simpler parsing
+  int ptr = RxPtrData;
+  for (int i=0; i<RxCmdLen-1; i++)
+  {
+    if (++ptr >= MAX_BUFF) ptr = 0;
+    linBuff[i] = RxBuff[ptr];
+  }
+}
 
