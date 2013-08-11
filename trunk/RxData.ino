@@ -7,9 +7,6 @@ http://www.guiott.com/Rino/CommandDescr/Protocol.htm
 */
 
 boolean RX_ID_FLAG  = false;// command decode flag
-int RxPtrStart = 0;         // message packet starting pointer in queue
-int RxPtrEnd = 0;           // message packet ending pointer in queue
-int RxPtrData = 0;          // pointer to first data in queue
 
 char HEADER = '@';          // header define
 int ID = 1;                 // this board identification
@@ -76,7 +73,8 @@ void RxData(void)
 		
 	  case 3:	// command length received
 			// calculating end pointer of command string
-	       RxPtrEnd=RxBuff[RxPtrOut]+RX_HEADER_LEN+RxPtrStart;
+               RxCmdLen=RxBuff[RxPtrOut];
+	       RxPtrEnd=RxCmdLen+RX_HEADER_LEN+RxPtrStart;
 	       if (RxPtrEnd >= MAX_BUFF)RxPtrEnd -= MAX_BUFF;
 	       if (RxPtrEnd >= MAX_BUFF)	// still bigger?
 	       {
