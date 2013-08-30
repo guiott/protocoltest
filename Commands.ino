@@ -7,6 +7,8 @@ http://www.guiott.com/Rino/CommandDescr/Protocol.htm
 */
 
 byte linBuff[MAX_BUFF]; // Linear buffer 
+int hPwrOff; // Power Off command from HLS to LLS
+int Light[2];// headlights intensity
 
 /*-----------------------------------------------------------------------------*/
 // Buffer b_dsNavParam
@@ -306,15 +308,10 @@ void S_Set(void)
 {/* set speed & direction HLS -> IMU -> dsNav*/
    int VelDes; // mean desired speed mm/s
    int YawDes; // desired orientation angle (set point)(Degx10 0-3599)
-   int Light[2];// headlights intensity
-   int hPwrOff; // Power Off command from HLS to LLS
    
    linearize();
    VelDes = (linBuff[0] << 8) + (linBuff[1]);
    YawDes = (linBuff[2] << 8) + (linBuff[3]);
-   Light[0] = linBuff[4];
-   Light[1] = linBuff[5];
-   hPwrOff = linBuff[6];
    
    // simulation. The requested value is looped back as a test
    Buff_b.I.VelInt[0] = VelDes;
@@ -360,7 +357,7 @@ union __Buff_L
 }Buff_L;
 
 void L_LLS(void)
-{/*  values coming from Low Level Supervisor LLS -> HLS
+{/*  values to and from Low Level Supervisor LLS <-> HLS
      right now it's simulated by the same serial port but actually it will come from the LLS serial
      0      Header	 @
      1      Id		 0	ASCII	(not used here, just for compatibility)
@@ -382,8 +379,13 @@ void L_LLS(void)
      15     lPwrOff      Switch Off from LLS to HLS -> 0 = PowerOn, 1 = PowerOff
      */
      
-    int Indx = RX_HEADER_LEN;  // Head length, number of characters in buffer before valid data
-
+     int Indx = RX_HEADER_LEN;  // Head length, number of characters in buffer before valid data
+     
+     linearize();
+     Light[0] = linBuff[0];
+     Light[1] = linBuff[1];
+     hPwrOff = linBuff[2];
+    
      // simulation. The requested value variation is simulated with joysticks as a test
      Buff_L.I.BatV[0] = Joy[0]/10.24;
      Buff_L.I.BatV[1] = Joy[1]/10.24;
