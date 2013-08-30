@@ -306,10 +306,16 @@ void S_Set(void)
 {/* set speed & direction HLS -> IMU -> dsNav*/
    int VelDes; // mean desired speed mm/s
    int YawDes; // desired orientation angle (set point)(Degx10 0-3599)
+   int Light[2];// headlights intensity
+   int hPwrOff; // Power Off command from HLS to LLS
+   
    linearize();
    VelDes = (linBuff[0] << 8) + (linBuff[1]);
    YawDes = (linBuff[2] << 8) + (linBuff[3]);
-
+   Light[0] = linBuff[4];
+   Light[1] = linBuff[5];
+   hPwrOff = linBuff[6];
+   
    // simulation. The requested value is looped back as a test
    Buff_b.I.VelInt[0] = VelDes;
    Buff_b.I.VelInt[1] = VelDes;
@@ -323,6 +329,17 @@ void S_Set(void)
    Buff_b.I.PosYmes = 987.654321;
    Buff_b.I.stasis_err = 8;
    Buff_b.I.stasis_alarm = 9;
+
+   if (hPwrOff > 0)
+   {
+     digitalWrite(LedG, LOW); 
+   }
+   else
+   {
+     digitalWrite(LedG, HIGH); 
+   }
+   analogWrite(LedY, (Light[0]));
+
    // simulation.
 }
 
@@ -332,12 +349,14 @@ struct _Buff_L
 {
      byte BatV[2]; // Left and Right battery voltage level
      byte Temp[2]; // Left and Right skulls temperature
+     byte Obst[7]; // Obstacles
+     byte lPwrOff; // Power Off command from LLS to HLS
 };
 
 union __Buff_L
 {
     struct _Buff_L I;// to use as integers or chars, little endian LSB first
-    byte C[4];  // to use as bytes to send on char buffer
+    byte C[12];  // to use as bytes to send on char buffer
 }Buff_L;
 
 void L_LLS(void)
@@ -351,6 +370,16 @@ void L_LLS(void)
      5      BatV[1]
      6      Temp[0]      Left and Right skulls temperature
      7      Temp[1]
+                         obstacle distance @ x degrees 
+                         (http://www.guiott.com/QuadSonar/HR/LinoSonar.png)
+     8      Obst[0]      LL Lef Left -52°
+     9      Obst[1]      LC Left Center -27°
+     10     Obst[2]      CL Center Left -12°
+     11     Obst[3]      CC Center Center 0°
+     12     Obst[4]      CR Center Right 12°
+     13     Obst[5]      RC Right Center 27°
+     14     Obst[6]      RR Right Right 52°
+     15     lPwrOff      Switch Off from LLS to HLS -> 0 = PowerOn, 1 = PowerOff
      */
      
     int Indx = RX_HEADER_LEN;  // Head length, number of characters in buffer before valid data
@@ -360,16 +389,31 @@ void L_LLS(void)
      Buff_L.I.BatV[1] = Joy[1]/10.24;
      Buff_L.I.Temp[0] = Joy[2]/10.24;
      Buff_L.I.Temp[1] = Joy[3]/10.24;
+     Buff_L.I.Obst[0] = 0;
+     Buff_L.I.Obst[1] = 1;
+     Buff_L.I.Obst[2] = 2;
+     Buff_L.I.Obst[3] = 3;
+     Buff_L.I.Obst[4] = 4;
+     Buff_L.I.Obst[5] = 5;
+     Buff_L.I.Obst[6] = 6;
+     Buff_L.I.lPwrOff  = SwitchOk;
      // simulation
       
      TxBuff[++Indx]=Buff_L.C[0];     // Battery level
      TxBuff[++Indx]=Buff_L.C[1];
-     TxBuff[++Indx]=Buff_L.C[2];     // temperature
+     TxBuff[++Indx]=Buff_L.C[2];     // Temperature
      TxBuff[++Indx]=Buff_L.C[3];
- 
+     TxBuff[++Indx]=Buff_L.C[4];     // Obstacles
+     TxBuff[++Indx]=Buff_L.C[5];
+     TxBuff[++Indx]=Buff_L.C[6];
+     TxBuff[++Indx]=Buff_L.C[7];
+     TxBuff[++Indx]=Buff_L.C[8];
+     TxBuff[++Indx]=Buff_L.C[9];
+     TxBuff[++Indx]=Buff_L.C[10];
+     TxBuff[++Indx]=Buff_L.C[11];    // Power Off
+
      TxData('L', Indx+1);
 }
-
 
 /*-----------------------------------------------------------------------------*/
 void linearize(void)

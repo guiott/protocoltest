@@ -17,6 +17,7 @@ the scheduled actions according to the commnad code.
 */
 
 #include <Time.h>
+#include <Bounce.h>
 
 //#define DEBUG_MODE // If defined outputs some data on serial for debug
 
@@ -36,6 +37,16 @@ long StartTime;             // the moment the packet starts receiving
 int Joy[4];
 int JoyIndx=0;
 int Dummy; // Dummy buffer for analog reading
+int led = 13;
+int LedR= 10;
+int LedG= 9;
+int LedY= 11;
+int Switch=12;
+int Push=8;
+boolean SwitchOk=0;
+boolean PushOk=0;
+Bounce SwitchBounce = Bounce (Switch, 25);
+Bounce PushBounce = Bounce (Push, 25);
 
 int RxPtrStart = 0;         // message packet starting pointer in queue
 int RxPtrEnd = 0;           // message packet ending pointer in queue
@@ -44,6 +55,12 @@ int RxCmdLen = 0;
 /*==============================================================================*/
 void setup() 
 {
+  pinMode(LedR, OUTPUT);  // LED red
+  pinMode(LedG, OUTPUT);  // LED green
+  pinMode(LedY, OUTPUT);  // LED yellow
+  pinMode(Switch, INPUT);// bistable switch
+  pinMode(Push, INPUT);  // momentary push button 
+
   // initialize serial:
   Serial.begin(Bps);
   // timeout in ms as a function of comm speed and buffer size
@@ -72,6 +89,14 @@ void loop()
         }
   }
   
+  SwitchBounce.update();
+  PushBounce.update();
+
+  SwitchOk = SwitchBounce.read();
+  PushOk = PushBounce.read();
+
+  digitalWrite(LedR, SwitchOk); 
+
   Joystick();
 }
 
